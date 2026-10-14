@@ -36,3 +36,4 @@ async def update_user_by_email(session: AsyncSession, email: EmailStr, about: st
     result = await session.execute(stmt)
     await session.commit()
     return result.rowcount > 0
+

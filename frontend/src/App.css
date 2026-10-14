@@ -1,0 +1,129 @@
+body {
+  background-color: #0b0f19;
+  color: #e2e8f0;
+  font-family: system-ui, -apple-system, sans-serif;
+  padding: 40px 20px;
+}
+
+.container {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+h1 {
+  color: #38bdf8;
+  text-align: center;
+}
+
+/* Стилизация формы под твои новые поля */
+.user-form {
+  background-color: #111827;
+  padding: 24px;
+  border-radius: 12px;
+  border: 1px solid #1f2937;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 40px;
+}
+
+.user-form input, .user-form textarea {
+  padding: 10px;
+  background-color: #1f2937;
+  border: 1px solid #374151;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 15px;
+}
+
+.user-form textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+.user-form button {
+  background-color: #38bdf8;
+  color: #0b0f19;
+  font-weight: bold;
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.user-form button:hover {
+  background-color: #0284c7;
+  color: #fff;
+}
+
+/* Карточки пользователей */
+.user-card {
+  background-color: #111827;
+  border: 1px solid #1f2937;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.user-info h4 {
+  margin: 0 0 10px 0;
+  font-size: 18px;
+  color: #f3f4f6;
+}
+
+.email-text, .about-text {
+  margin: 4px 0;
+  font-size: 14px;
+  color: #9ca3af;
+}
+
+.id-text {
+  color: #4b5563;
+  font-size: 11px;
+  display: block;
+  margin-top: 8px;
+}
+
+/* Кнопки действий */
+.card-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.card-actions button {
+  padding: 8px 12px;
+  font-size: 13px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.card-actions button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.btn-edit {
+  background-color: #374151;
+  color: #f3f4f6;
+}
+
+.btn-edit:hover:not(:disabled) {
+  background-color: #4b5563;
+}
+
+.btn-delete {
+  background-color: #7f1d1d;
+  color: #fca5a5;
+}
+
+.btn-delete:hover:not(:disabled) {
+  background-color: #b91c1c;
+}

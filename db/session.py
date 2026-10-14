@@ -13,7 +13,6 @@ DATABASE_URL = (
     f"@{settings.host}:{db_port}/{settings.database}"
 )
 
-# В SQLAlchemy V2 аргумент future=True больше не нужен и удалён
 engine = create_async_engine(DATABASE_URL, echo=True)
 
 # Современный способ создания фабрики асинхронных сессий
