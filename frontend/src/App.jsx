@@ -1,205 +1,114 @@
-import { useState, useEffect } from 'react'
-import './App.css' 
+import { useState } from 'react'
+import './App.css'
 
 function App() {
-  // --- 1. Стейты для данных с сервера ---
-  const [users, setUsers] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
+  // Стейты для авторизации
+  const [loginEmail, setLoginEmail] = useState('')      // Что вводим в поле логина
+  const [currentUser, setCurrentUser] = useState(null)  // Данные вошедшего пользователя
 
-  // --- 2. Стейты для полей формы (CreateUser) ---
-  const [name, setName] = useState('')
-  const [surname, setSurname] = useState('')
-  const [email, setEmail] = useState('')
-  const [about, setAbout] = useState('')
-
-  // Стейт для отслеживания: редактируем ли мы кого-то прямо сейчас?
-  const [editingEmail, setEditingEmail] = useState(null)
+  // Стейт для редактирования поля "О себе"
+  const [newAbout, setNewAbout] = useState('')
 
   const API_URL = 'http://localhost:8000/api/v1/users'
 
-  // --- Функция получения всех пользователей (GET /) ---
-  const fetchUsers = async () => {
+  // --- 1. Функция "Входа" в личный кабинет ---
+  const handleLogin = async (e) => {
+    e.preventDefault()
+    if (!loginEmail.trim()) return
+
     try {
-      setLoading(true)
-      const response = await fetch(`${API_URL}/`)
-      if (!response.ok) throw new Error('Ошибка при загрузке пользователей')
-      const data = await response.json()
-      setUsers(data)
+      // Делаем запрос на твой эндпоинт GET /api/v1/users/{email}
+      const response = await fetch(`${API_URL}/${encodeURIComponent(loginEmail.trim())}`)
+      
+      if (!response.ok) {
+        throw new Error('Пользователь с таким Email не найден в базе данных')
+      }
+
+      const userData = await response.json()
+      setCurrentUser(userData)       // Сохраняем пользователя в память (мы вошли!)
+      setNewAbout(userData.about || '') // Сразу заполняем поле "О себе" для редактирования
     } catch (err) {
-      setError(err.message)
-    } finally {
-      setLoading(false)
+      alert(err.message)
     }
   }
 
-  useEffect(() => {
-    fetchUsers()
-  }, [])
-
-  // --- Функция создания нового пользователя (POST /) ---
-  const handleCreateUser = async (e) => {
+  // --- 2. Функция изменения данных "О себе" (PATCH) ---
+  const handleUpdateAbout = async (e) => {
     e.preventDefault()
     
-    // name и surname обязательны по твоей схеме CreateUser
-    if (!name.trim() || !surname.trim()) {
-      alert('Имя и Фамилия обязательны для заполнения!')
-      return
-    }
-
     try {
-      const response = await fetch(`${API_URL}/`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        // Передаем ровно те поля, которые требует схема CreateUser
-        body: JSON.stringify({
-          name: name,
-          surname: surname,
-          email: email.trim() === '' ? null : email, // Если пусто — шлем null
-          about: about.trim() === '' ? null : about
-        })
-      })
+      // Твой эндпоинт: PATCH /api/v1/users/{email}?about=текст
+      // Судя по твоему коду users.py (строка 47), about идет как query-параметр в URL
+      const response = await fetch(
+        `${API_URL}/${encodeURIComponent(currentUser.email)}?about=${encodeURIComponent(newAbout)}`, 
+        { method: 'PATCH' }
+      )
 
-      if (!response.ok) throw new Error('Не удалось создать пользователя')
+      if (!response.ok) throw new Error('Не удалось обновить данные')
 
-      // Очищаем форму после успеха
-      setName('')
-      setSurname('')
-      setEmail('')
-      setAbout('')
-      
-      fetchUsers() // Обновляем список на экране
+      // Обновляем данные на экране
+      setCurrentUser({ ...currentUser, about: newAbout })
+      alert('Профиль успешно обновлен!')
     } catch (err) {
       alert(err.message)
     }
   }
 
-  // --- Функция удаления пользователя (DELETE /{email}) ---
-  const handleDeleteUser = async (userEmail) => {
-    if (!userEmail) {
-      alert('У этого пользователя нет Email, удалить через API нельзя (в роутере привязка к email)')
-      return
-    }
-
-    if (!window.confirm(`Вы уверены, что хотите удалить пользователя ${userEmail}?`)) return
-
-    try {
-      const response = await fetch(`${API_URL}/${userEmail}`, {
-        method: 'DELETE'
-      })
-
-      if (!response.ok) throw new Error('Ошибка при удалении')
-      
-      fetchUsers() 
-    } catch (err) {
-      alert(err.message)
-    }
+  // --- 3. Функция выхода из кабинета ---
+  const handleLogout = () => {
+    setCurrentUser(null)
+    setLoginEmail('')
   }
 
-  // --- Функция обновления поля "О себе" (PATCH /{email}) ---
-  const handleUpdateAbout = async (userEmail) => {
-    const newAbout = prompt('Введите новый текст "О себе":')
-    if (newAbout === null) return // Нажали отмену
-
-    try {
-      const response = await fetch(`${API_URL}/${userEmail}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        // эндпоинт принимает строку about как query-параметр или body. 
-        // Передаем строку в формате JSON, если эндпоинт ждет тело:
-        body: JSON.stringify(newAbout) 
-      })
-
-      // Примечание: Если на бекенде прилетает ошибка 422, значит FastAPI ждал `about` в строке URL. 
-      // Тогда адрес запроса нужно изменить на: `${API_URL}/${userEmail}?about=${encodeURIComponent(newAbout)}` c методом PATCH.
-
-      if (!response.ok) throw new Error('Ошибка при обновлении профиля')
-      
-      fetchUsers()
-    } catch (err) {
-      alert(err.message)
-    }
-  }
-
+  // --- ИНТЕРФЕЙС ---
   return (
     <div className="container">
-      <h1>Участники Сети (Networking)</h1>
+      <h1>Networking Space</h1>
 
-      {/* ФОРМА СОЗДАНИЯ (Соответствует CreateUser) */}
-      <form onSubmit={handleCreateUser} className="user-form">
-        <h3>Регистрация нового пользователя</h3>
-        
-        <input 
-          type="text" 
-          placeholder="Имя (Обязательно)" 
-          value={name} 
-          onChange={(e) => setName(e.target.value)} 
-          required 
-        />
-        
-        <input 
-          type="text" 
-          placeholder="Фамилия (Обязательно)" 
-          value={surname} 
-          onChange={(e) => setSurname(e.target.value)} 
-          required 
-        />
-        
-        <input 
-          type="email" 
-          placeholder="Email (Опционально)" 
-          value={email} 
-          onChange={(e) => setEmail(e.target.value)} 
-        />
-        
-        <textarea 
-          placeholder="О себе (Опционально)" 
-          value={about} 
-          onChange={(e) => setAbout(e.target.value)} 
-        />
+      {/* ЕСЛИ ПОЛЬЗОВАТЕЛЬ НЕ ВОШЕЛ — ПОКАЗЫВАЕМ ФОРМУ ВХОДА */}
+      {!currentUser ? (
+        <form onSubmit={handleLogin} className="auth-form">
+          <h2>Вход в личный кабинет</h2>
+          <p>Введите свой Email, чтобы войти в профиль</p>
+          <input 
+            type="email" 
+            placeholder="your-email@example.com" 
+            value={loginEmail}
+            onChange={(e) => setLoginEmail(e.target.value)}
+            required
+          />
+          <button type="submit">Войти</button>
+        </form>
+      ) : (
+        /* ЕСЛИ ПОЛЬЗОВАТЕЛЬ ВОШЕЛ — ПОКАЗЫВАЕМ ЛИЧНЫЙ КАБИНЕТ */
+        <div className="profile-card">
+          <div className="profile-header">
+            <h2>Личный кабинет</h2>
+            <button className="btn-logout" onClick={handleLogout}>Выйти</button>
+          </div>
 
-        <button type="submit">Добавить в базу</button>
-      </form>
+          <div className="profile-info">
+            <p><strong>Имя:</strong> {currentUser.name}</p>
+            <p><strong>Фамилия:</strong> {currentUser.surname}</p>
+            <p><strong>Email:</strong> {currentUser.email}</p>
+            <p><strong>ID в системе:</strong> <small>{currentUser.id}</small></p>
+          </div>
 
-      {/* СПИСОК ПОЛЬЗОВАТЕЛЕЙ (Соответствует User) */}
-      <div className="users-section">
-        <h3>Зарегистрированные пользователи</h3>
-
-        {loading && <p className="status">Загрузка данных из БД...</p>}
-        {error && <p className="status error">Ошибка: {error}</p>}
-        
-        <div className="users-list">
-          {users.map((user) => (
-            <div key={user.id || user.email} className="user-card">
-              <div className="user-info">
-                <h4>{user.name} {user.surname}</h4>
-                <p className="email-text"><strong>Email:</strong> {user.email || 'Не указан'}</p>
-                <p className="about-text"><strong>О себе:</strong> {user.about || 'Ничего не указано'}</p>
-                <small className="id-text">ID: {user.id}</small>
-              </div>
-              
-              <div className="card-actions">
-                <button 
-                  className="btn-edit" 
-                  onClick={() => handleUpdateAbout(user.email)}
-                  disabled={!user.email}
-                >
-                  Изменить "О себе"
-                </button>
-                <button 
-                  className="btn-delete" 
-                  onClick={() => handleDeleteUser(user.email)}
-                  disabled={!user.email}
-                >
-                  Удалить
-                </button>
-              </div>
-            </div>
-          ))}
+          {/* ФОРМА РЕДАКТИРОВАНИЯ "О СЕБЕ" (Твой эндпоинт PATCH) */}
+          <form onSubmit={handleUpdateAbout} className="update-about-form">
+            <label><strong>О себе:</strong></label>
+            <textarea 
+              value={newAbout} 
+              onChange={(e) => setNewAbout(e.target.value)}
+              placeholder="Расскажите о своих навыках или проектах..."
+            />
+            <button type="submit">Сохранить изменения</button>
+          </form>
         </div>
-      </div>
+      )}
     </div>
   )
 }
 
 export default App
+

@@ -2,128 +2,137 @@ body {
   background-color: #0b0f19;
   color: #e2e8f0;
   font-family: system-ui, -apple-system, sans-serif;
-  padding: 40px 20px;
+  padding: 60px 20px;
 }
 
 .container {
-  max-width: 700px;
+  max-width: 550px;
   margin: 0 auto;
 }
 
 h1 {
-  color: #38bdf8;
   text-align: center;
+  color: #38bdf8;
+  margin-bottom: 40px;
 }
 
-/* Стилизация формы под твои новые поля */
-.user-form {
+/* Форма авторизации */
+.auth-form {
   background-color: #111827;
-  padding: 24px;
+  padding: 30px;
   border-radius: 12px;
   border: 1px solid #1f2937;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin-bottom: 40px;
+  gap: 15px;
 }
 
-.user-form input, .user-form textarea {
-  padding: 10px;
+.auth-form h2 {
+  margin: 0;
+  color: #f3f4f6;
+}
+
+.auth-form p {
+  color: #9ca3af;
+  margin: 0;
+  font-size: 14px;
+}
+
+.auth-form input {
+  padding: 12px;
   background-color: #1f2937;
   border: 1px solid #374151;
   border-radius: 6px;
   color: #fff;
-  font-size: 15px;
+  font-size: 16px;
 }
 
-.user-form textarea {
-  resize: vertical;
-  min-height: 60px;
-}
-
-.user-form button {
+.auth-form button {
   background-color: #38bdf8;
   color: #0b0f19;
   font-weight: bold;
   padding: 12px;
   border: none;
   border-radius: 6px;
+  font-size: 16px;
   cursor: pointer;
   transition: 0.2s;
 }
 
-.user-form button:hover {
+.auth-form button:hover {
   background-color: #0284c7;
   color: #fff;
 }
 
-/* Карточки пользователей */
-.user-card {
+/* Личный кабинет */
+.profile-card {
   background-color: #111827;
   border: 1px solid #1f2937;
   border-radius: 12px;
-  padding: 20px;
-  margin-bottom: 16px;
+  padding: 30px;
+}
+
+.profile-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  gap: 20px;
+  align-items: center;
+  border-bottom: 1px solid #1f2937;
+  padding-bottom: 15px;
+  margin-bottom: 20px;
 }
 
-.user-info h4 {
-  margin: 0 0 10px 0;
-  font-size: 18px;
-  color: #f3f4f6;
+.profile-header h2 {
+  margin: 0;
+  color: #38bdf8;
 }
 
-.email-text, .about-text {
-  margin: 4px 0;
-  font-size: 14px;
-  color: #9ca3af;
-}
-
-.id-text {
-  color: #4b5563;
-  font-size: 11px;
-  display: block;
-  margin-top: 8px;
-}
-
-/* Кнопки действий */
-.card-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.card-actions button {
-  padding: 8px 12px;
-  font-size: 13px;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
-  font-weight: 500;
-}
-
-.card-actions button:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
-}
-
-.btn-edit {
+.btn-logout {
   background-color: #374151;
   color: #f3f4f6;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
 }
 
-.btn-edit:hover:not(:disabled) {
+.btn-logout:hover {
   background-color: #4b5563;
 }
 
-.btn-delete {
-  background-color: #7f1d1d;
-  color: #fca5a5;
+.profile-info p {
+  margin: 10px 0;
+  font-size: 16px;
 }
 
-.btn-delete:hover:not(:disabled) {
-  background-color: #b91c1c;
+/* Форма обновления статуса */
+.update-about-form {
+  margin-top: 25px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.update-about-form textarea {
+  padding: 12px;
+  background-color: #1f2937;
+  border: 1px solid #374151;
+  border-radius: 6px;
+  color: #fff;
+  min-height: 80px;
+  resize: vertical;
+}
+
+.update-about-form button {
+  background-color: #10b981; /* Зеленая кнопка сохранения */
+  color: #fff;
+  font-weight: 500;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.update-about-form button:hover {
+  background-color: #059669;
 }
